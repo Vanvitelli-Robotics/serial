@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <package>
   <name>serial</name>
-  <version>1.2.1</version>
+  <version>2.2.1</version>
   <description>
+    AMENT VERSION
     Serial is a cross-platform, simple to use library for using serial ports on computers.
     This library provides a C++, object oriented interface for interacting with RS-232
     like devices on Linux and Windows.
@@ -18,7 +19,10 @@
 
   <author email="wjwwood@gmail.com">William Woodall</author>
   <author email="ash.gti@gmail.com">John Harrison</author>
+  <author email="marco.costanzo@unicampania.it">Marco Costanzo</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 
 </package>

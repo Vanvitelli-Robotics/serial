@@ -1,8 +1,15 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(serial)
 
-# Find catkin
-find_package(catkin REQUIRED)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
+find_package(ament_cmake REQUIRED)
 
 if(APPLE)
     find_library(IOKIT_LIBRARY IOKit)
@@ -13,17 +20,11 @@ if(UNIX AND NOT APPLE)
     # If Linux, add rt and pthread
     set(rt_LIBRARIES rt)
     set(pthread_LIBRARIES pthread)
-    catkin_package(
-        LIBRARIES ${PROJECT_NAME}
-        INCLUDE_DIRS include
-        DEPENDS rt pthread
-    )
+    ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
+    # ament_export_dependencies(rt pthread)
 else()
     # Otherwise normal call
-    catkin_package(
-        LIBRARIES ${PROJECT_NAME}
-        INCLUDE_DIRS include
-    )
+    ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
 endif()
 
 ## Sources
@@ -57,25 +58,30 @@ else()
 endif()
 
 ## Uncomment for example
-add_executable(serial_example examples/serial_example.cc)
-add_dependencies(serial_example ${PROJECT_NAME})
-target_link_libraries(serial_example ${PROJECT_NAME})
+# add_executable(serial_example examples/serial_example.cc)
+# add_dependencies(serial_example ${PROJECT_NAME})
+# target_link_libraries(serial_example ${PROJECT_NAME})
 
 ## Include headers
 include_directories(include)
 
-## Install executable
-install(TARGETS ${PROJECT_NAME}
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+install(
+  DIRECTORY include/
+  DESTINATION include
 )
 
-## Install headers
-install(FILES include/serial/serial.h include/serial/v8stdint.h
-  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/serial)
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
 
-## Tests
-if(CATKIN_ENABLE_TESTING)
-    add_subdirectory(tests)
-endif()
+# ## Tests
+# if(CATKIN_ENABLE_TESTING)
+#     add_subdirectory(tests)
+# endif()
+
+ament_package()
